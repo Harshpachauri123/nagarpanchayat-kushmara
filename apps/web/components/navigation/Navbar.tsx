@@ -1,0 +1,970 @@
+"use client"
+
+import React, { useEffect, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import Link from "next/link"
+import {
+  Menu,
+  X,
+  ChevronDown,
+  Building2,
+  FileSpreadsheet,
+  Newspaper,
+  Award,
+  Layers3,
+  ShieldCheck,
+  Mail,
+  Home,
+  Image as ImageIcon,
+  Search,
+  ExternalLink,
+  Landmark,
+  FileText,
+  Droplets,
+  Construction,
+  Recycle,
+} from "lucide-react"
+
+interface MenuItem {
+  name: string
+  href: string
+  hasDropdown?: boolean
+  megaMenuType?: "departments" | "services" | null
+  items?: { name: string; href: string }[]
+}
+
+export default function Navbar() {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [activeTab, setActiveTab] = useState("Home")
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [mobileSearch, setMobileSearch] = useState("")
+
+  /* =========================================================
+      SCROLL STATE
+  ========================================================== */
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 80)
+    }
+
+    handleScroll()
+    window.addEventListener("scroll", handleScroll)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
+  /* =========================================================
+      ACTIVE ROUTE
+  ========================================================== */
+
+  useEffect(() => {
+    if (pathname === "/") setActiveTab("Home")
+    else if (pathname === "/about") setActiveTab("About")
+    else if (pathname === "/departments") setActiveTab("Departments")
+    else if (pathname === "/services") setActiveTab("Services")
+    else if (pathname === "/public-grievance")
+      setActiveTab("Public Grievance")
+    else if (pathname === "/schemes") setActiveTab("Schemes")
+    else if (pathname === "/gallery") setActiveTab("Gallery")
+    else if (pathname === "/staff") setActiveTab("Staff")
+    else if (pathname === "/contact") setActiveTab("Contact")
+    else if (pathname === "/propertytax") setActiveTab("Property Tax")
+    else setActiveTab("Home")
+  }, [pathname])
+
+  /* =========================================================
+      MENU ITEMS
+  ========================================================== */
+
+  const menuItems: MenuItem[] = [
+    { name: "Home", href: "/", hasDropdown: false },
+    { name: "About", href: "/about", hasDropdown: false },
+    {
+      name: "Departments",
+      href: "/departments",
+      hasDropdown: true,
+      megaMenuType: "departments",
+    },
+    {
+      name: "Services",
+      href: "/services",
+      hasDropdown: true,
+      megaMenuType: "services",
+    },
+    {
+      name: "Public Grievance",
+      href: "/public-grievance",
+      hasDropdown: false,
+    },
+    { name: "Schemes", href: "/schemes", hasDropdown: false },
+    { name: "Gallery", href: "/gallery", hasDropdown: false },
+    { name: "Staff", href: "/staff", hasDropdown: false },
+    { name: "Contact", href: "/contact", hasDropdown: false },
+    { name: "Property Tax", href: "/propertytax", hasDropdown: false },
+  ]
+
+  /* =========================================================
+      DEPARTMENTS
+  ========================================================== */
+
+  const departments = [
+    {
+      name: "Public Works Department",
+      desc: "Municipal roads, infrastructure and civil projects.",
+      icon: Construction,
+      color: "from-yellow-500 to-amber-500",
+    },
+    {
+      name: "Revenue Department",
+      desc: "Taxation, revenue collection and trade licensing.",
+      icon: FileSpreadsheet,
+      color: "from-amber-500 to-yellow-400",
+    },
+    {
+      name: "Water Supply Department",
+      desc: "Drinking water distribution and connections.",
+      icon: Droplets,
+      color: "from-yellow-400 to-lime-500",
+    },
+    {
+      name: "Sanitation Department",
+      desc: "Waste management, cleanliness and hygiene.",
+      icon: Recycle,
+      color: "from-amber-400 to-yellow-500",
+    },
+    {
+      name: "Health Department",
+      desc: "Birth, death and community health services.",
+      icon: Award,
+      color: "from-yellow-500 to-orange-400",
+    },
+    {
+      name: "Engineering Department",
+      desc: "Town planning, construction and engineering.",
+      icon: Building2,
+      color: "from-amber-500 to-yellow-600",
+    },
+  ]
+
+  /* =========================================================
+      SERVICES
+  ========================================================== */
+
+  const services = [
+    {
+      name: "Property Tax Payment",
+      desc: "View and manage property and house tax dues.",
+      icon: FileSpreadsheet,
+      color: "from-yellow-500 to-amber-500",
+    },
+    {
+      name: "Water Connection Request",
+      desc: "Apply for a new municipal water connection.",
+      icon: Droplets,
+      color: "from-yellow-400 to-amber-500",
+    },
+    {
+      name: "Birth Certificate",
+      desc: "Apply and verify municipal birth records.",
+      icon: Award,
+      color: "from-amber-400 to-yellow-500",
+    },
+    {
+      name: "Death Registration",
+      desc: "Register and verify death records.",
+      icon: FileText,
+      color: "from-yellow-500 to-amber-600",
+    },
+    {
+      name: "Trade License",
+      desc: "Apply for or renew municipal trade licenses.",
+      icon: Landmark,
+      color: "from-amber-500 to-yellow-400",
+    },
+    {
+      name: "Building Permission",
+      desc: "Submit building permission and NOC requests.",
+      icon: Building2,
+      color: "from-yellow-500 to-lime-500",
+    },
+    {
+      name: "RTI Services",
+      desc: "Access information under the RTI framework.",
+      icon: Newspaper,
+      color: "from-amber-500 to-yellow-500",
+    },
+    {
+      name: "Grievance Redressal",
+      desc: "Register civic complaints and track resolution.",
+      icon: Mail,
+      color: "from-yellow-600 to-amber-500",
+    },
+  ]
+
+  /* =========================================================
+      MENU CLICK
+  ========================================================== */
+
+  const handleMenuClick = (name: string, href: string) => {
+    setActiveTab(name)
+    setIsOpen(false)
+    setOpenDropdown(null)
+
+    if (href.includes("#")) {
+      const targetId = href.split("#")[1]
+
+      if (!targetId) {
+        router.push(href)
+        return
+      }
+
+      if (pathname === "/") {
+        const element = document.getElementById(targetId)
+
+        if (element) {
+          const offset = scrolled ? 90 : 140
+
+          const elementPosition =
+            element.getBoundingClientRect().top + window.scrollY
+
+          window.scrollTo({
+            top: elementPosition - offset,
+            behavior: "smooth",
+          })
+        }
+      } else {
+        router.push(href)
+      }
+    } else {
+      router.push(href)
+    }
+  }
+
+  /* =========================================================
+      ESC CLOSE
+  ========================================================== */
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpenDropdown(null)
+        setIsOpen(false)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [])
+
+  /* =========================================================
+      BODY SCROLL LOCK
+  ========================================================== */
+
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow
+      document.body.style.overflow = "hidden"
+
+      return () => {
+        document.body.style.overflow = originalOverflow
+      }
+    }
+  }, [isOpen])
+
+  /* =========================================================
+      RENDER
+  ========================================================== */
+
+  return (
+    <>
+      <nav
+        className={`
+          sticky top-0 z-50 w-full
+          border-b border-yellow-200/80
+          transition-all duration-500
+          ${
+            scrolled
+              ? "bg-white/95 shadow-[0_12px_40px_rgba(161,98,7,0.16)] backdrop-blur-xl"
+              : "bg-linear-to-r from-yellow-50 via-amber-50 to-yellow-50"
+          }
+        `}
+      >
+        {/* TOP GOLD ACCENT */}
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-linear-to-r from-yellow-400 via-amber-500 to-yellow-400" />
+
+        {/* SUBTLE GOLD PATTERN */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-[0.035]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(161,98,7,.7) 1px, transparent 1px), linear-gradient(90deg, rgba(161,98,7,.7) 1px, transparent 1px)",
+            backgroundSize: "34px 34px",
+          }}
+        />
+
+        {/* MAIN NAVIGATION */}
+        <div
+          className={`
+            relative mx-auto flex max-w-[1440px]
+            items-center gap-5 px-4 md:px-6
+            transition-all duration-300
+            ${scrolled ? "h-[68px]" : "h-[78px]"}
+          `}
+        >
+          {/* BRAND ON SCROLL */}
+          <Link
+            href="/"
+            className={`
+              group flex shrink-0 items-center gap-3
+              transition-all duration-300
+              ${
+                scrolled
+                  ? "w-auto translate-x-0 opacity-100"
+                  : "pointer-events-none w-0 -translate-x-5 overflow-hidden opacity-0"
+              }
+            `}
+            aria-label="Nagar Panchayat Kushmara, Mainpuri Home"
+          >
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-full bg-yellow-300/30 blur-md transition-all duration-300 group-hover:bg-yellow-300/50" />
+
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-full border border-yellow-300/50 bg-white p-1.5 shadow-lg">
+                <img
+                  src="/governmentlogo.png"
+                  alt="Government Emblem"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            </div>
+
+            <div className="hidden xl:block">
+              <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-amber-700">
+                Government of Uttar Pradesh
+              </p>
+
+              <p className="mt-0.5 text-[12px] font-extrabold uppercase tracking-wide text-stone-800">
+                Nagar Panchayat Kushmara, Mainpuri
+              </p>
+            </div>
+          </Link>
+
+          {/* DESKTOP NAVIGATION */}
+          <div className="hidden min-w-0 flex-1 items-center justify-center lg:flex">
+            <div className="flex items-center gap-1">
+              {menuItems.map((item) => {
+                const isActive = activeTab === item.name
+                const isDropdownOpen = openDropdown === item.name
+                const isPropertyTax = item.name === "Property Tax"
+
+                return (
+                  <div
+                    key={item.name}
+                    className="relative"
+                    onMouseEnter={() => {
+                      if (item.hasDropdown) {
+                        setOpenDropdown(item.name)
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      if (item.hasDropdown) {
+                        setOpenDropdown(null)
+                      }
+                    }}
+                  >
+                    {/* NAV ITEM */}
+                    <button
+                      type="button"
+                      onClick={() => handleMenuClick(item.name, item.href)}
+                      aria-expanded={
+                        item.hasDropdown ? isDropdownOpen : undefined
+                      }
+                      className={`
+                        group relative flex
+                        h-11 cursor-pointer
+                        items-center gap-1.5
+                        rounded-xl px-3.5
+                        text-[12px]
+                        font-bold
+                        uppercase
+                        tracking-[0.055em]
+                        transition-all
+                        duration-300
+                        ${
+                          isActive
+                            ? "bg-linear-to-r from-yellow-500 to-amber-500 text-stone-950 shadow-[0_6px_18px_rgba(245,158,11,0.35)]"
+                            : isPropertyTax
+                              ? "bg-linear-to-r from-yellow-400 to-amber-400 text-stone-950 shadow-[0_5px_16px_rgba(245,158,11,0.28)] hover:from-yellow-300 hover:to-amber-300"
+                              : "text-stone-700 hover:bg-yellow-100/80 hover:text-amber-800"
+                        }
+                      `}
+                    >
+                      <span>{item.name}</span>
+
+                      {item.hasDropdown && (
+                        <ChevronDown
+                          className={`
+                            h-3.5 w-3.5
+                            transition-all
+                            duration-300
+                            ${
+                              isDropdownOpen
+                                ? "rotate-180"
+                                : "group-hover:translate-y-0.5"
+                            }
+                          `}
+                        />
+                      )}
+
+                      {!isActive && !isPropertyTax && (
+                        <span
+                          className="
+                            absolute bottom-1.5
+                            left-3 right-3
+                            h-[2px]
+                            origin-center
+                            scale-x-0
+                            rounded-full
+                            bg-linear-to-r
+                            from-yellow-500
+                            to-amber-400
+                            opacity-0
+                            transition-all
+                            duration-300
+                            group-hover:scale-x-100
+                            group-hover:opacity-100
+                          "
+                        />
+                      )}
+                    </button>
+
+                    {/* MEGA MENU */}
+                    {item.hasDropdown &&
+                      item.megaMenuType &&
+                      isDropdownOpen && (
+                        <div
+                          className="absolute left-1/2 top-full z-[70] w-[860px] -translate-x-1/2 pt-3"
+                          onMouseEnter={() => setOpenDropdown(item.name)}
+                          onMouseLeave={() => setOpenDropdown(null)}
+                        >
+                          <div className="overflow-hidden rounded-3xl border border-yellow-200 bg-white shadow-[0_30px_90px_rgba(120,53,15,0.22)]">
+                            {/* GOLD TOP ACCENT */}
+                            <div className="h-1 bg-linear-to-r from-yellow-400 via-amber-500 to-yellow-400" />
+
+                            <div className="grid grid-cols-[245px_1fr]">
+                              {/* INTRO PANEL */}
+                              <div className="relative overflow-hidden bg-linear-to-br from-yellow-950 via-amber-900 to-yellow-800 p-7 text-white">
+                                <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full border border-yellow-200/10" />
+
+                                <div className="absolute -bottom-20 -left-10 h-48 w-48 rounded-full bg-yellow-400/10 blur-3xl" />
+
+                                <div className="relative flex h-full flex-col justify-between">
+                                  <div>
+                                    <div
+                                      className="
+                                        mb-5 flex h-12 w-12
+                                        items-center justify-center
+                                        rounded-2xl
+                                        bg-linear-to-br
+                                        from-yellow-400
+                                        to-amber-500
+                                        text-stone-950
+                                        shadow-lg
+                                      "
+                                    >
+                                      {item.megaMenuType === "departments" ? (
+                                        <Building2 className="h-6 w-6" />
+                                      ) : (
+                                        <Layers3 className="h-6 w-6" />
+                                      )}
+                                    </div>
+
+                                    <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-yellow-300">
+                                      Explore Kushmara
+                                    </p>
+
+                                    <h3 className="mt-1.5 text-2xl font-extrabold tracking-tight">
+                                      {item.name}
+                                    </h3>
+
+                                    <p className="mt-3 text-[11px] leading-6 text-yellow-100/80">
+                                      {item.megaMenuType === "departments"
+                                        ? "Explore municipal departments, responsibilities and administrative functions of Nagar Panchayat, Raya."
+                                        : "Access important civic services and digital facilities provided by Nagar Panchayat, Raya."}
+                                    </p>
+                                  </div>
+
+                                  <div className="border-t border-yellow-200/10 pt-4">
+                                    <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-yellow-300/70">
+                                      Official Portal
+                                    </p>
+
+                                    <p className="mt-1 text-[10px] font-semibold text-white">
+                                      Kushmara, Mainpuri, Uttar Pradesh
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* ITEMS */}
+                              <div className="bg-[#FFFDF5] p-5">
+                                <div className="grid grid-cols-2 gap-2.5">
+                                  {(item.megaMenuType === "departments"
+                                    ? departments
+                                    : services
+                                  ).map((subItem) => {
+                                    const Icon = subItem.icon
+
+                                    return (
+                                      <button
+                                        key={subItem.name}
+                                        type="button"
+                                        onClick={() =>
+                                          handleMenuClick(
+                                            item.name,
+                                            item.href,
+                                          )
+                                        }
+                                        className="
+                                          group flex cursor-pointer
+                                          items-start gap-3
+                                          rounded-2xl
+                                          border border-transparent
+                                          bg-white p-3.5
+                                          text-left
+                                          transition-all
+                                          duration-300
+                                          hover:-translate-y-0.5
+                                          hover:border-yellow-300
+                                          hover:bg-yellow-50
+                                          hover:shadow-md
+                                        "
+                                      >
+                                        <div
+                                          className={`
+                                            flex h-10 w-10
+                                            shrink-0
+                                            items-center
+                                            justify-center
+                                            rounded-xl
+                                            bg-linear-to-br
+                                            ${subItem.color}
+                                            text-white
+                                            shadow-md
+                                            transition-all
+                                            duration-300
+                                            group-hover:scale-110
+                                            group-hover:rotate-3
+                                          `}
+                                        >
+                                          <Icon className="h-4 w-4" />
+                                        </div>
+
+                                        <div className="min-w-0 flex-1">
+                                          <p className="text-[11px] font-bold text-stone-900 transition-colors group-hover:text-amber-700">
+                                            {subItem.name}
+                                          </p>
+
+                                          <p className="mt-1 line-clamp-2 text-[9px] leading-4 text-slate-500">
+                                            {subItem.desc}
+                                          </p>
+                                        </div>
+
+                                        <ChevronDown className="mt-1 hidden h-3.5 w-3.5 -rotate-90 shrink-0 text-amber-600 opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100 sm:block" />
+                                      </button>
+                                    )
+                                  })}
+                                </div>
+
+                                {/* FOOTER */}
+                                <div className="mt-4 flex items-center justify-between border-t border-yellow-100 pt-4">
+                                  <div className="flex items-center gap-2">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.7)]" />
+
+                                    <p className="text-[9px] font-semibold text-slate-500">
+                                      Government of Uttar Pradesh
+                                    </p>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleMenuClick(item.name, item.href)
+                                    }
+                                    className="
+                                      group inline-flex
+                                      cursor-pointer
+                                      items-center gap-1
+                                      rounded-lg px-2.5 py-1.5
+                                      text-[9px]
+                                      font-bold
+                                      uppercase
+                                      tracking-wider
+                                      text-amber-700
+                                      transition-all
+                                      hover:bg-yellow-100
+                                      hover:text-amber-900
+                                    "
+                                  >
+                                    View all
+
+                                    <ExternalLink className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* MOBILE BUTTON */}
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={isOpen}
+            className="
+              ml-auto flex h-11 w-11
+              shrink-0 cursor-pointer
+              items-center justify-center
+              rounded-xl
+              border border-yellow-300
+              bg-yellow-100/80
+              text-amber-700
+              backdrop-blur-md
+              transition-all duration-300
+              hover:border-yellow-500
+              hover:bg-yellow-400
+              hover:text-stone-950
+              focus:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-yellow-400
+              lg:hidden
+            "
+          >
+            {isOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+      </nav>
+
+      {/* =========================================================
+          MOBILE DRAWER
+      ========================================================== */}
+
+      {isOpen && (
+        <div className="fixed inset-0 top-0 z-[100] lg:hidden">
+          {/* BACKDROP */}
+          <button
+            type="button"
+            aria-label="Close mobile navigation"
+            onClick={() => setIsOpen(false)}
+            className="absolute inset-0 cursor-default bg-stone-950/70 backdrop-blur-sm"
+          />
+
+          {/* DRAWER */}
+          <aside className="absolute right-0 top-0 flex h-full w-[90%] max-w-[410px] flex-col overflow-hidden border-l border-yellow-200 bg-[#FFFDF5] shadow-[-25px_0_80px_rgba(120,53,15,0.25)]">
+            {/* DRAWER HEADER */}
+            <div className="relative overflow-hidden bg-linear-to-br from-yellow-950 via-amber-900 to-yellow-800 text-white">
+              <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-yellow-400/10 blur-2xl" />
+
+              <div className="relative flex items-center justify-between px-5 py-4">
+                <Link
+                  href="/"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full border border-yellow-300/50 bg-white p-1.5 shadow-lg">
+                    <img
+                      src="/governmentlogo.png"
+                      alt="Government Emblem"
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+
+                  <div>
+                    <p className="text-[8px] font-bold uppercase tracking-[0.16em] text-yellow-300">
+                      Government of Uttar Pradesh
+                    </p>
+
+                    <p className="mt-0.5 text-[13px] font-extrabold text-white">
+                      Nagar Panchayat Kushmara
+                    </p>
+
+                    <p className="text-[10px] font-semibold text-yellow-200">
+                      Mainpuri
+                    </p>
+                  </div>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close menu"
+                  className="
+                    flex h-9 w-9
+                    cursor-pointer
+                    items-center justify-center
+                    rounded-xl
+                    border border-white/15
+                    bg-white/10
+                    text-white
+                    transition-all
+                    hover:bg-yellow-400
+                    hover:text-stone-950
+                  "
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="h-1 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-400" />
+            </div>
+
+            {/* MOBILE SEARCH */}
+            <div className="border-b border-yellow-100 bg-white px-5 py-3.5">
+              <div className="group flex h-11 w-full items-center gap-2.5 rounded-xl border border-yellow-200 bg-yellow-50/70 px-3 transition-all focus-within:border-yellow-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-yellow-400/20">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-yellow-500 to-amber-500 text-stone-950 shadow-sm">
+                  <Search className="h-3.5 w-3.5" />
+                </span>
+
+                <input
+                  type="text"
+                  value={mobileSearch}
+                  onChange={(e) => setMobileSearch(e.target.value)}
+                  placeholder="Search services, pages..."
+                  className="w-full bg-transparent text-[12px] font-semibold text-stone-900 placeholder-slate-400 outline-none"
+                />
+
+                {mobileSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setMobileSearch("")}
+                    aria-label="Clear mobile search"
+                    className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full bg-slate-200 text-slate-600 hover:bg-slate-300"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* MOBILE MENU */}
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              <div className="space-y-1.5">
+                {menuItems.map((item) => {
+                  const isActive = activeTab === item.name
+                  const hasSub = item.hasDropdown
+                  const isDropdownOpen = openDropdown === item.name
+                  const isPropertyTax = item.name === "Property Tax"
+
+                  return (
+                    <div key={item.name}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (hasSub) {
+                            setOpenDropdown(
+                              isDropdownOpen ? null : item.name,
+                            )
+                          } else {
+                            handleMenuClick(item.name, item.href)
+                          }
+                        }}
+                        className={`
+                          group flex w-full
+                          cursor-pointer
+                          items-center
+                          justify-between
+                          rounded-xl
+                          px-3.5 py-3
+                          text-left
+                          transition-all
+                          duration-200
+                          ${
+                            isActive
+                              ? "bg-linear-to-r from-yellow-500 to-amber-500 text-stone-950 shadow-lg shadow-yellow-500/20"
+                              : isPropertyTax
+                                ? "bg-linear-to-r from-yellow-400 to-amber-400 text-stone-950"
+                                : "text-stone-800 hover:bg-white hover:text-amber-700 hover:shadow-sm"
+                          }
+                        `}
+                      >
+                        <span className="flex items-center gap-3">
+                          {item.name === "Home" && (
+                            <Home className="h-4 w-4" />
+                          )}
+
+                          {item.name === "About" && (
+                            <ShieldCheck className="h-4 w-4" />
+                          )}
+
+                          {item.name === "Departments" && (
+                            <Building2 className="h-4 w-4" />
+                          )}
+
+                          {item.name === "Services" && (
+                            <Layers3 className="h-4 w-4" />
+                          )}
+
+                          {item.name === "Public Grievance" && (
+                            <Mail className="h-4 w-4" />
+                          )}
+
+                          {item.name === "Schemes" && (
+                            <Award className="h-4 w-4" />
+                          )}
+
+                          {item.name === "Gallery" && (
+                            <ImageIcon className="h-4 w-4" />
+                          )}
+
+                          {item.name === "Staff" && (
+                            <Building2 className="h-4 w-4" />
+                          )}
+
+                          {item.name === "Contact" && (
+                            <Mail className="h-4 w-4" />
+                          )}
+
+                          {item.name === "Property Tax" && (
+                            <FileSpreadsheet className="h-4 w-4" />
+                          )}
+
+                          <span className="text-[12px] font-bold uppercase tracking-[0.045em]">
+                            {item.name}
+                          </span>
+                        </span>
+
+                        {hasSub && (
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${
+                              isDropdownOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        )}
+                      </button>
+
+                      {/* MOBILE SUBMENU */}
+                      {hasSub && isDropdownOpen && (
+                        <div className="ml-4 mt-1.5 space-y-1.5 border-l-2 border-yellow-300 pl-3">
+                          {(item.megaMenuType === "departments"
+                            ? departments
+                            : services
+                          ).map((subItem) => {
+                            const Icon = subItem.icon
+
+                            return (
+                              <button
+                                type="button"
+                                key={subItem.name}
+                                onClick={() =>
+                                  handleMenuClick(item.name, item.href)
+                                }
+                                className="
+                                  group flex w-full
+                                  cursor-pointer
+                                  items-center gap-2.5
+                                  rounded-xl
+                                  border border-transparent
+                                  bg-white
+                                  px-3 py-2.5
+                                  text-left
+                                  transition-all
+                                  hover:border-yellow-300
+                                  hover:bg-yellow-50
+                                  hover:shadow-sm
+                                "
+                              >
+                                <div
+                                  className={`
+                                    flex h-8 w-8
+                                    shrink-0
+                                    items-center
+                                    justify-center
+                                    rounded-lg
+                                    bg-linear-to-br
+                                    ${subItem.color}
+                                    text-white
+                                    shadow-sm
+                                  `}
+                                >
+                                  <Icon className="h-3.5 w-3.5" />
+                                </div>
+
+                                <div className="min-w-0">
+                                  <p className="text-[10px] font-bold text-stone-900">
+                                    {subItem.name}
+                                  </p>
+
+                                  <p className="mt-0.5 line-clamp-1 text-[8px] text-slate-500">
+                                    {subItem.desc}
+                                  </p>
+                                </div>
+
+                                <ChevronDown className="ml-auto h-3 w-3 -rotate-90 text-amber-500 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+                              </button>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* DRAWER FOOTER */}
+            <div className="border-t border-yellow-100 bg-white p-5">
+              <div className="relative overflow-hidden rounded-2xl border border-yellow-200 bg-linear-to-br from-yellow-50 to-amber-50 p-4">
+                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-yellow-300/25 blur-xl" />
+
+                <div className="relative flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-yellow-500 to-amber-500 text-stone-950 shadow-md">
+                    <ShieldCheck className="h-4 w-4" />
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-stone-900">
+                      Official Portal
+                    </p>
+
+                    <p className="mt-1 text-[9px] leading-4 text-slate-500">
+                      Nagar Panchayat Kushmara, Mainpuri
+                    </p>
+
+                    <div className="mt-2 flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-yellow-500" />
+
+                      <span className="text-[8px] font-bold uppercase tracking-wider text-amber-700">
+                        Government of Uttar Pradesh
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+    </>
+  )
+}
